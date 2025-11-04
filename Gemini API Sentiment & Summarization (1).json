@@ -1,0 +1,298 @@
+{
+  "name": "Gemini API Sentiment & Summarization",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "AIzaSyB6J6KNLqPTxWvOBraRXQtPoWW9mOgPDds"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Summarize the following text in one sentence:\\n\\n={{ $json.body.text_to_analyze }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "fa622be0-45a4-4e08-b2e6-023bbdda1663",
+      "name": "Gemini - Summarize",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1936,
+        1984
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "AIzaSyB6J6KNLqPTxWvOBraRXQtPoWW9mOgPDds"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Perform a concise sentiment analysis (Positive, Negative, or Neutral) with reasoning for the following text:\\n\\n={{ $json.body.text_to_analyze }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "9f50b6a8-9b2d-4cef-b303-ca2599c3aecb",
+      "name": "Gemini - Sentiment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1936,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "final_result",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e9963b9e-f660-4e15-b8a8-d1dae8283a0f",
+      "name": "Format Summarize Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1712,
+        1984
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "final_result",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4467ed32-08c6-4df6-a518-dbd24e186a1e",
+      "name": "Format Sentiment Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1712,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "summarization",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "190b1586-61f7-4e3c-8907-8ca0db6a11ba",
+      "name": "Webhook - Summarization",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2160,
+        1984
+      ],
+      "webhookId": "5ff25e43-2cac-4eef-b332-9b4a16790036"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "820b984d-33e7-47b1-a4a3-97d51dedaf7b",
+      "name": "Return Sentiment Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1488,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "2906ae21-ce1c-4eaf-8253-0a05c64d11a2",
+      "name": "Return Summarization Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1488,
+        1984
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sentiment-analysis",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "12b93f1c-ed28-4df0-88dd-2b7d08576ca1",
+      "name": "Webhook - sentiment-analysis",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2176,
+        2208
+      ],
+      "webhookId": "5ff25e43-2cac-4eef-b332-9b4a16790036"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gemini - Summarize": {
+      "main": [
+        [
+          {
+            "node": "Format Summarize Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Sentiment": {
+      "main": [
+        [
+          {
+            "node": "Format Sentiment Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Summarize Output": {
+      "main": [
+        [
+          {
+            "node": "Return Summarization Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Sentiment Output": {
+      "main": [
+        [
+          {
+            "node": "Return Sentiment Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Summarization": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - sentiment-analysis": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Sentiment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f005b013-b93b-4b60-852e-5a89eda8d3dc",
+  "meta": {
+    "instanceId": "e3570ecfc4e711a437a9899344d2109abac50759bf186bac662b84ad9b3d7650"
+  },
+  "id": "IFfoOZPt89IKSera",
+  "tags": []
+}
